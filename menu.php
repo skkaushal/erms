@@ -62,108 +62,137 @@ if (!$row) {
 			</div>
 			
 			<div class="center_content">
-			
-				<div class="center_right">
-					<div class="title_name">ERMS</div>
+				<table width="100%">
+
+					<tr>
+						<td >
+                            <div class="title_name">ERMS</div>
+
+						</td>
+                        <td >
+                            <div class="title_name">Main Menu</div>
+
+
+                        </td>
+
+                        <td >
+                            <div class="title_name"><?php print $row['Name']; ?></div>
+
+
+                        </td>
+
+
+
+                    <tr>
+
+                        <td colspan="2" >
+                            <div class="title_name"></div>
+
+
+                        </td>
+                        <td >
+                             <?php
+
+
+                                switch ($row['UserType']) {
+                                    case "G":
+                                        $query = "select ERMSMenu('{$_SESSION['username']}') AS DD from Dual";
+
+                                        $result = mysqli_query($con,$query);
+                                        if (!$result) {
+                                            print "<p class='error'>Error: " . mysqli_error($con). "</p>";
+                                            exit();
+                                        }
+
+                                        $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+
+                                        if (!$row) {
+                                            print "<p>Error: No data returned from database.  Administrator login NOT supported.</p>";
+                                            print "<a href='logout.php'>Logout</a>";
+                                            exit();
+                                        }
+
+                                        print "Juridiction = ". $row['DD'];
+                                        break;
+                                    case "M":
+                                        $query = "select ERMSMenu('{$_SESSION['username']}') AS DD from Dual";
+
+                                        $result = mysqli_query($con,$query);
+                                        if (!$result) {
+                                            print "<p class='error'>Error: " . mysqli_error($con). "</p>";
+                                            exit();
+                                        }
+
+                                        $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+
+                                        if (!$row) {
+                                            print "<p>Error: No data returned from database.  Administrator login NOT supported.</p>";
+                                            print "<a href='logout.php'>Logout</a>";
+                                            exit();
+                                        }
+
+                                        print "Population = ". $row['DD'];
+                                        break;
+                                    case "I":
+                                        $query = "select ERMSMenu('{$_SESSION['username']}') AS DD from Dual";
+
+                                        $result = mysqli_query($con,$query);
+                                        if (!$result) {
+                                            print "<p class='error'>Error: " . mysqli_error($con). "</p>";
+                                            exit();
+                                        }
+
+                                        $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+
+                                        if (!$row) {
+                                            print "<p>Error: No data returned from database.  Administrator login NOT supported.</p>";
+                                            print "<a href='logout.php'>Logout</a>";
+                                            exit();
+                                        }
+
+                                        #print "Job Title = ". $row['DD'];
+                                        break;
+                                    case "C":
+                                        $query = "select ERMSMenu('{$_SESSION['username']}') AS DD from Dual";
+
+                                        $result = mysqli_query($con,$query);
+                                        if (!$result) {
+                                            print "<p class='error'>Error: " . mysqli_error($con). "</p>";
+                                            exit();
+                                        }
+
+                                        $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+
+                                        if (!$row) {
+                                            print "<p>Error: No data returned from database.  Administrator login NOT supported.</p>";
+                                            print "<a href='logout.php'>Logout</a>";
+                                            exit();
+                                        }
+
+                                        print "Headguarters = ". $row['DD'];
+                                        break;
+                                    default:
+                                        echo "Check inputs!";
+                                }
+
+
+                                ?>
+
+
+                        </td>
+
+                    </tr>
+					</table>
+                <hr>
+                <div class="center_content">
 					<table width="100%">
 
-						<tr>
-							<td >
-								<?php print $row['Name']; ?>
 
-							</td>
-
-						</tr>
 						<tr>
 							<td >
 								<ul>
 
-									<?php
 
-
-									switch ($row['UserType']) {
-										case "G":
-											$query = "select ERMSMenu('{$_SESSION['username']}') AS DD from Dual";
-
-											$result = mysqli_query($con,$query);
-											if (!$result) {
-												print "<p class='error'>Error: " . mysqli_error($con). "</p>";
-												exit();
-											}
-
-											$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
-
-											if (!$row) {
-												print "<p>Error: No data returned from database.  Administrator login NOT supported.</p>";
-												print "<a href='logout.php'>Logout</a>";
-												exit();
-											}
-
-											print "Juridiction = ". $row['DD'];
-											break;
-										case "M":
-											$query = "select ERMSMenu('{$_SESSION['username']}') AS DD from Dual";
-
-											$result = mysqli_query($con,$query);
-											if (!$result) {
-												print "<p class='error'>Error: " . mysqli_error($con). "</p>";
-												exit();
-											}
-
-											$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
-
-											if (!$row) {
-												print "<p>Error: No data returned from database.  Administrator login NOT supported.</p>";
-												print "<a href='logout.php'>Logout</a>";
-												exit();
-											}
-
-											print "Population = ". $row['DD'];
-											break;
-										case "I":
-											$query = "select ERMSMenu('{$_SESSION['username']}') AS DD from Dual";
-
-											$result = mysqli_query($con,$query);
-											if (!$result) {
-												print "<p class='error'>Error: " . mysqli_error($con). "</p>";
-												exit();
-											}
-
-											$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
-
-											if (!$row) {
-												print "<p>Error: No data returned from database.  Administrator login NOT supported.</p>";
-												print "<a href='logout.php'>Logout</a>";
-												exit();
-											}
-
-											print "Job Title = ". $row['DD'];
-											break;
-										case "C":
-											$query = "select ERMSMenu('{$_SESSION['username']}') AS DD from Dual";
-
-											$result = mysqli_query($con,$query);
-											if (!$result) {
-												print "<p class='error'>Error: " . mysqli_error($con). "</p>";
-												exit();
-											}
-
-											$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
-
-											if (!$row) {
-												print "<p>Error: No data returned from database.  Administrator login NOT supported.</p>";
-												print "<a href='logout.php'>Logout</a>";
-												exit();
-											}
-
-											print "Headguarters = ". $row['DD'];
-											break;
-										default:
-											echo "Check inputs!";
-									}
-
-
-									?>
 								</ul>
 
 							</td>
@@ -176,31 +205,31 @@ if (!$row) {
 						
 						<div class="profile_section">
 							
-							<table width="100%">
+							<table width="100%" align="center">
 								<tr>
 
-									<td><a href="add_resource.php">Add Resource</a></td>
+									<td align="center"><a href="add_resource.php">Add Resource</a></td>
 								</tr>
 								<tr>
 
-									<td><a href="newincident.php">Add Emergency Incident</a></td>
-								</tr>
-
-								<tr>
-
-									<td><a href="SearchResources.php">Search Resources</a></td>
+									<td align="center"><a href="newincident.php">Add Emergency Incident</a></td>
 								</tr>
 
 								<tr>
 
-									<td><a href="SearchResources.php">Resource Status</a></td>
+									<td align="center"><a href="SearchResources.php">Search Resources</a></td>
+								</tr>
+
 								<tr>
 
-									<td><a href="../erms/ResourceReport.php">Resource Report</a></td>
+									<td  align="center"><a href="SearchResources.php">Resource Status</a></td>
+								<tr>
+
+									<td align="center"><a href="ResourceReport.php">Resource Report</a></td>
 								</tr>
 								<tr>
 
-									<td><a href="../erms/ResourceReport.php">ExitT</a></td>
+									<td align="center"><a href="logout.php">Logout</a></td>
 								</tr>
 
 
@@ -209,6 +238,8 @@ if (!$row) {
 							</table>						
 							
 						</div>
+
+
 						
 
 						
