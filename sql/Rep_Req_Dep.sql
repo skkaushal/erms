@@ -24,10 +24,11 @@ Case one: ResourceID: 77, IncidentID: 28;
 Case two: ResourceID: 84, IncidentID: 31;
 
 ***************************************************************/
-Call arrgRepairs(77,28);
+Call btnRepairs(77,28);
 
-Call arrgRepairs(84,31);
+Call btnRepairs(84,31);
 
+Call btnRepairs(109, 44);
 
 /***************************************************************
 Arrange Deployment;
@@ -54,9 +55,9 @@ Case one: ResourceID: 79, IncidentID:41;
 Case two: ResourceID: 109, IncidentID:44;
 
 ***************************************************************/
-select arrgDeployForSelf(79,41);
+select btnDeployForSelf(79,41);
 
-select arrgDeployForSelf(109,44);
+select btnDeployForSelf(109,44);
 
 /***************************************************************
 Arrange Requests;
@@ -84,6 +85,6 @@ Case one: ResourceID: 102, IncidentID: 31;
 Case two: ResourceID: 78, IncidentID: 28;
 
 ***************************************************************/
-select arrgRequest(102,31);
+select btnRequest(102,31);
 
-select arrgRequest(78,28);
+select btnRequest(78,28);

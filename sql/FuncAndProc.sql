@@ -347,11 +347,10 @@ we might directly push a resource 'in repair' if it's availabel
 or push it to 'Scheduled' if it's in use 
 **********************************************************/  
 DELIMITER ;;
-Drop procedure if exists arrgRepairs;;
-      
+Drop procedure if exists btnRepairs;;     
 
      
-	  Create procedure arrgRepairs(In R_ID int,
+	  Create procedure btnRepairs(In R_ID int,
 								   In I_ID int)
                                    
 	  Begin
@@ -412,9 +411,9 @@ are the same the deployment can take into effect
 
 Delimiter ;;
 
-Drop function if exists arrgDeployForSelf;;
+Drop function if exists btnDeployForSelf;;
 
-  Create function arrgDeployForSelf (R_ID int,
+  Create function btnDeployForSelf (R_ID int,
 							         I_ID int
 									)
   returns int
@@ -459,9 +458,9 @@ are the same the deployment can take into effect
  
 Delimiter ;;
 
-Drop function if exists arrgRequest;;
+Drop function if exists btnRequest;;
 
-  Create function arrgRequest (R_ID int,
+  Create function btnRequest (R_ID int,
 							   I_ID int
                               )
   returns int
@@ -492,3 +491,216 @@ Drop function if exists arrgRequest;;
 	  End if;
    
   End;;
+  
+  
+/**********************************************************
+10. Display "Resource in Use"
+**********************************************************/ 
+Delimiter ;;
+
+Drop procedure if exists dispResourceInUse;;    
+
+Create procedure dispResourceInUse (IN User_Nm varchar(100))
+
+Begin
+       select a.ResourceID as ID,
+			  c.ResourceName,
+              b.Description as Incident,
+              c.OwnerName as Owner,
+              a.StartDt,
+              a.Returnby
+		from Deployment a
+           join Incident b
+           on a.IncidentID = b.IncidentID
+			   join Resource c
+			   on a.ResourceID = c.ResourceID
+                 where b.OwnerName = User_Nm
+                 and a.DeployStatus = 1;
+
+End;;
+
+
+  
+/**********************************************************
+11. Display "Resources requested by me"
+**********************************************************/ 
+Delimiter ;;
+
+Drop procedure if exists dispRequestsByMe;;
+
+ create procedure dispRequestsByMe (IN User_Nm varchar(100))
+ 
+ Begin
+ select a.ResourceID as ID,
+        c.ResourceName,
+        b.Description as Incident,
+        c.OwnerName as Owner,
+        a.Returnby,
+        c.Status /* added resource status, so that if it's 'in use' or 'in repair' then we hide deploy button*/
+       from Requests a
+         join Incident b
+          on a.IncidentID = b.IncidentID
+            join Resource c
+             on a.ResourceId = c.ResourceID
+              where a.RequestStatus = 0
+               and b.OwnerName = User_Nm;
+ End ;;
+ 
+ 
+/**********************************************************
+12. Display "Resources requests received by me"
+**********************************************************/ 
+ 
+Delimiter ;;
+
+drop procedure if exists dispReceivedByMe;;
+
+create procedure dispReceivedByMe (IN User_Nm varchar(100))
+
+   Begin
+     select a.ResourceID as ID,
+            c.ResourceName,
+            b.Description as Incident,
+            b.OwnerName as Requestedby,
+            a.Returnby
+	   from Requests a
+         join Incident b
+          on a.IncidentID = b.IncidentID
+           join Resource c
+            on a.ResourceID = c.ResourceID
+		where a.RequestStatus = 0
+         and c.OwnerName = User_Nm;
+    
+   End;;
+  
+/**********************************************************
+13. Display "Repairs Scheduled/In-progress"
+**********************************************************/ 
+
+Delimiter ;;
+
+Drop procedure if exists dispInRepair;;
+
+create procedure dispInRepair (IN User_Nm varchar(100))
+
+   Begin
+     select a.ResourceID as ID,
+            b.ResourceName,
+            a.StartDt,
+            a.Readyby,
+            case when a.RepairStatus = 0 then 'Scheduled' 
+                 when a.RepairStatus = 1 then 'In Progress' end as Status
+	   from Repairs a
+         join Resource b
+          on a.ResourceID = b.ResourceID
+          where b.OwnerName = User_Nm
+          and RepairStatus in (0,1);
+    End;;
+ 
+
+
+/**********************************************************
+14. Return button (Action in Resource in Use)
+**********************************************************/ 
+
+Delimiter ;;
+
+Drop procedure if exists btnReturnResource;;
+
+create procedure btnReturnResource (IN R_ID int,
+									In I_ID int)
+
+   Begin
+     Update Deployment a
+            set a.DeployStatus =0
+            where a.IncidentID = I_ID
+			 and a.ResourceID = R_ID
+             and a.DeployStatus = 1;
+             
+	
+     Update Resource a
+            set a.Status = 'Available'
+            where a.ResourceID = R_ID;
+     
+     End;;
+  
+/**********************************************************
+15. Cancel button (Action in Resources Requested by Me)
+**********************************************************/ 
+Delimiter ;;
+
+Drop procedure if exists btnCancelRequest;;
+
+Create procedure btnCancelRequest (IN R_ID int,
+                                   IN I_ID int)
+                                   
+Begin
+   delete from Requests
+           where IncidentID = I_ID
+           and ResourceID = R_ID
+           and RequestStatus = 0;
+
+End;;
+
+
+/**********************************************************
+16. Deploy button (Action in Resources Received by Me)
+**********************************************************/
+Delimiter ;;
+
+Drop procedure if exists btnDeployForOthers;;
+
+create procedure btnDeployForOthers (IN R_ID int,
+									 IN I_ID int)
+Begin
+   insert into Deployment (ResourceID, IncidentID, StartDt, Returnby, DeployStatus)
+               Values (R_ID,
+                       I_ID,
+                       Curdate(),
+                       date_add(Curdate(),interval 10 day),
+                       1);
+	
+    update Requests a
+    set a.RequestStatus = 1
+       where a.ResourceID = R_ID
+         and a.INcidentID = I_ID;
+                       
+	Update Resource a
+	Set a.Status = 'In Use'
+        where a.ResourceID = R_ID;
+End;;
+
+/**********************************************************
+17. Reject button (Action in Resources Received by Me)
+**********************************************************/
+Delimiter ;;
+
+Drop procedure if exists btnReject;;
+
+create procedure btnReject (IN R_ID int,
+							IN I_ID int)
+                            
+Begin
+  Update Requests a
+  set a.RequestStatus = -1
+  where a.ResourceID = R_ID
+  and a.IncidentID = I_ID
+  and a.RequestStatus = 0;
+  
+End;;
+
+/**********************************************************
+18. Cancel button (Action in Repairs Scheduled/In-progress)
+**********************************************************/
+Delimiter ;;
+
+Drop procedure if exists btnCancelRepair;;
+
+Create procedure btnCancelRepair (IN R_ID int)
+
+delete 
+    from Repairs
+    where ResourceID = R_ID
+    and RepairStatus = 0;
+    
+
