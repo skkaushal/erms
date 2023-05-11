@@ -1,2 +1,2 @@
 # erms
-GatechDBClass
+GatechDB
